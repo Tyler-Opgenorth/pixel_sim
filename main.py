@@ -12,6 +12,7 @@ tyler opgenorth
 8 = fire emitter
 9 = water emitter
 10 = gas
+11 = electric
 """
 from Gravity import *
 import pygame
@@ -24,14 +25,16 @@ pygame.init()
 clock = pygame.time.Clock()
 world = []
 row = []
-height = 100
-width = 100
+height = 50
+width = 50
 place = False
 delete = False
 selection = 1
 selection_size = 1
 paused = False
 #generate world
+world = []
+row = []
 for y in range(height):
     for x in range(width):
         if x == 0 or x == width-1 or y == 0 or y == height-1:
@@ -61,14 +64,23 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 selection += 1
-                if selection > 10:
+                if selection > 11:
                     selection = 1
             if event.key == pygame.K_LEFT:
                 selection -= 1
                 if selection < 1:
-                    selection = 10
+                    selection = 11
             if event.key == pygame.K_r:
-                world.reverse()
+                world = []
+                row = []
+                for y in range(height):
+                    for x in range(width):
+                        if x == 0 or x == width - 1 or y == 0 or y == height - 1:
+                            row.append(-1)
+                        else:
+                            row.append(0)
+                    world.append(row)
+                    row = []
             if event.key == pygame.K_UP:
                 selection_size += 1
                 if selection_size > 3:
@@ -196,6 +208,9 @@ while running:
                 pygame.draw.rect(screen, (0, 0, 255), (x*(500/width), y*(500/height), 50, 50))
             if world[y][x] == 10:
                 pygame.draw.rect(screen, (0, 255, 0), (x*(500/width), y*(500/height), 50, 50))
+            if world[y][x] == 11:
+                pygame.draw.rect(screen, (0, 255, 255), (x*(500/width), y*(500/height), 50, 50))
+
 
     #update pixel positions
 
@@ -319,6 +334,8 @@ while running:
                     if world[y + flow_2][x + flow] == 0:
                         world[y + flow_2][x + flow] = 10
                         world[y][x] = 0
+                elif world[y][x] == 11:
+                    world[y][x] = Liquid_update(world, x, y, world[y][x])
 
 
         world.reverse()
@@ -384,7 +401,6 @@ while running:
             pygame.draw.rect(screen, (0, 255, 0), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (0, 255, 0), (20, 20, 30, 30))
-
     pygame.display.flip()
     pygame.display.update()
     pygame.fullscreen = False
