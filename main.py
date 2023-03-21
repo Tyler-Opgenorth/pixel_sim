@@ -1,19 +1,20 @@
 """
 tyler opgenorth
 -1 = wall
-0 = air
-1 = water
+0 = air #
+1 = water#
 2 = barrier
-3 = sand
-4 = g_sand
+3 = sand#
+4 = g_sand#
 5 = spark
-6 = v_oil
-7 = lava
+6 = v_oil#
+7 = lava#
 8 = fire emitter
 9 = water emitter
-10 = gas
-11 = acid
+10 = gas#
+11 = acid#
 12
+
 """
 TOTAL_TYPES = 12
 from Gravity import *
@@ -35,7 +36,6 @@ selection_size = 1
 paused = False
 #generate world
 world = []
-heat_map =[]
 row = []
 for y in range(height):
     for x in range(width):
@@ -45,11 +45,7 @@ for y in range(height):
             row.append(0)
     world.append(row)
     row = []
-for y in range(height):
-    for x in range(width):
-        row.append(0)
-    heat_map.append(row)
-    row = []
+
 running = True
 while running:
     #world speed
