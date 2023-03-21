@@ -12,8 +12,10 @@ tyler opgenorth
 8 = fire emitter
 9 = water emitter
 10 = gas
-11 = electric
+11 = acid
+12
 """
+TOTAL_TYPES = 12
 from Gravity import *
 import pygame
 import random
@@ -23,8 +25,7 @@ screen = pygame.display.set_mode((screen_size, screen_size), pygame.NOFRAME)
 pygame.display.set_caption('MatterBox')
 pygame.init()
 clock = pygame.time.Clock()
-world = []
-row = []
+
 height = 50
 width = 50
 place = False
@@ -34,6 +35,7 @@ selection_size = 1
 paused = False
 #generate world
 world = []
+heat_map =[]
 row = []
 for y in range(height):
     for x in range(width):
@@ -42,6 +44,11 @@ for y in range(height):
         else:
             row.append(0)
     world.append(row)
+    row = []
+for y in range(height):
+    for x in range(width):
+        row.append(0)
+    heat_map.append(row)
     row = []
 running = True
 while running:
@@ -64,12 +71,12 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 selection += 1
-                if selection > 11:
+                if selection > TOTAL_TYPES:
                     selection = 1
             if event.key == pygame.K_LEFT:
                 selection -= 1
                 if selection < 1:
-                    selection = 11
+                    selection = TOTAL_TYPES
             if event.key == pygame.K_r:
                 world = []
                 row = []
@@ -209,7 +216,9 @@ while running:
             if world[y][x] == 10:
                 pygame.draw.rect(screen, (0, 255, 0), (x*(500/width), y*(500/height), 50, 50))
             if world[y][x] == 11:
-                pygame.draw.rect(screen, (0, 255, 255), (x*(500/width), y*(500/height), 50, 50))
+                pygame.draw.rect(screen, (0, 155, 100), (x*(500/width), y*(500/height), 50, 50))
+            if world[y][x] == 12:
+                pygame.draw.rect(screen, (100, 155, 100), (x*(500/width), y*(500/height), 50, 50))
 
 
     #update pixel positions
@@ -334,73 +343,95 @@ while running:
                     if world[y + flow_2][x + flow] == 0:
                         world[y + flow_2][x + flow] = 10
                         world[y][x] = 0
+                    if world[y-1][x] == 1:
+                        world[y][x] = 11
+                    if world[y][x+1] == 1:
+                        world[y][x] = 11
+                    if world[y][x-1] == 1:
+                        world[y][x] = 11
+                    if world[y+1][x+1] == 1:
+                        world[y][x] = 11
+                    if world[y-1][x-1] == 1:
+                        world[y][x] = 11
+                    if world[y+1][x-1] == 1:
+                        world[y][x] = 11
+                    if world[y-1][x+1] == 1:
+                        world[y][x] = 11
                 elif world[y][x] == 11:
                     world[y][x] = Liquid_update(world, x, y, world[y][x])
-
+                    if world[y-1][x] != 11 and world[y-1][x] > 0:
+                        world[y-1][x] = 0
+                    if world[y][x+1] != 11 and world[y][x+1] > 0:
+                        world[y][x+1] = 0
+                    if world[y][x-1] != 11 and world[y][x-1] > 0:
+                        world[y][x-1] = 0
+                    if world[y+1][x+1] != 11 and world[y+1][x+1] > 0:
+                        world[y + 1][x + 1] = 0
+                    if world[y-1][x-1] != 11 and world[y-1][x-1] > 0:
+                        world[y - 1][x - 1] = 0
+                    if world[y+1][x-1] != 11 and world[y+1][x-1] >0:
+                        world[y+1][x-1] = 0
+                    if world[y-1][x+1] != 11 and world[y-1][x+1] > 0:
+                        world[y-1][x+1] = 0
+                elif world[y][x] == 12:
+                    world[y][x] = Liquid_update(world, x, y, world[y][x])
 
         world.reverse()
     if selection == 1:
         display((0,0,255), selection_size, screen)
-
-    if selection == 2:
+    elif selection == 2:
         display((155, 155, 155), selection_size, screen)
-
-    if selection == 3:
+    elif selection == 3:
         display((100, 100, 100), selection_size, screen)
-
-    if selection == 4:
+    elif selection == 4:
         if selection_size == 1:
             pygame.draw.rect(screen, (100, 155, 200), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (100, 155, 200), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (100, 155, 200), (20, 20, 30, 30))
-
-    if selection == 5:
+    elif selection == 5:
         if selection_size == 1:
             pygame.draw.rect(screen, (255, 155, 155), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (255, 155, 155), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (255, 155, 155), (20, 20, 30, 30))
-
-    if selection == 6:
+    elif selection == 6:
         if selection_size == 1:
             pygame.draw.rect(screen, (240, 200, 100), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (240, 200, 100), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (240, 200, 100), (20, 20, 30, 30))
-
-    if selection == 7:
+    elif selection == 7:
         if selection_size == 1:
             pygame.draw.rect(screen, (155, 50, 50), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (155, 50, 50), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (155, 50, 50), (20, 20, 30, 30))
-
-    if selection == 8:
+    elif selection == 8:
         if selection_size == 1:
             pygame.draw.rect(screen, (255, 0, 0), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (255, 0, 0), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (255, 0, 0), (20, 20, 30, 30))
-    if selection == 9:
+    elif selection == 9:
+        display((0, 0, 255), selection_size, screen)
+
         if selection_size == 1:
             pygame.draw.rect(screen, (0, 0, 255), (20, 20, 10, 10))
         if selection_size == 2:
             pygame.draw.rect(screen, (0, 0, 255), (20, 20, 20, 20))
         if selection_size == 3:
             pygame.draw.rect(screen, (0, 0, 255), (20, 20, 30, 30))
-    if selection == 10:
-        if selection_size == 1:
-            pygame.draw.rect(screen, (0, 255, 0), (20, 20, 10, 10))
-        if selection_size == 2:
-            pygame.draw.rect(screen, (0, 255, 0), (20, 20, 20, 20))
-        if selection_size == 3:
-            pygame.draw.rect(screen, (0, 255, 0), (20, 20, 30, 30))
+    elif selection == 10:
+        display((0, 255, 0), selection_size, screen)
+    elif selection == 11:
+        display((0, 155, 100), selection_size, screen)
+
     pygame.display.flip()
     pygame.display.update()
     pygame.fullscreen = False
